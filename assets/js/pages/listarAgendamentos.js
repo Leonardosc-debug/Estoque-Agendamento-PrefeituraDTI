@@ -56,7 +56,7 @@ function limparFiltros() {
 
 async function consultaSql() {
   try {
-    const respostaJSON = await $.ajax({
+    const respostaJson = await $.ajax({
       url: "../../../php/actions/consultarAgendamentos.php",
       type: "POST",
       data: {
@@ -69,7 +69,7 @@ async function consultaSql() {
       dataType: "json",
     });
 
-    return respostaJSON;
+    return respostaJson;
   } catch (erro) {
     const $divTabela = $("#divTabela");
 
@@ -147,7 +147,6 @@ function montarPaginacao(quantidadeAgendamentos) {
 }
 
 function trazerPraTabela(arrayAgendamentos) {
-  console.log("renderizou");
   // Limpa o conteúdo atual da tabela
   $("#tabela tbody").empty();
 
