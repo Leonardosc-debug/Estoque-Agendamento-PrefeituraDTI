@@ -1,8 +1,15 @@
 <?php
-include "./db/conexao.php";
+
+try {
+    require "../../database/conexao.php";
+} catch (\Throwable $e) {
+    error_log($e->getMessage());
+    http_response_code(403);
+    die("Não foi possivel realizar a conexão com o banco de dados.");
+}
+
 
 $idAgendamento = mysqli_escape_string($conn, $_POST["idAgendamento"]);
-
 $sqlApagarLinhaAgendamentos = "DELETE FROM `agendamento` WHERE `idAgendamento` = '$idAgendamento'";
 $sqlConsultaNomesArquivosReferentes = "SELECT `nomeAnexo` FROM `anexosagendamento` WHERE `idAgendamento` = '$idAgendamento'";
 $consultaNomesArquivosReferentes = mysqli_query($conn, $sqlConsultaNomesArquivosReferentes);
