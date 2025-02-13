@@ -1,0 +1,26 @@
+body {
+    background-image: url('../img/background-login.jpg');
+    background-size: cover;  /* Faz a imagem cobrir toda a tela */
+    background-position: center center;  /* Centraliza a imagem */
+    background-attachment: fixed;  /* Mantém a imagem fixa durante o scroll */
+    background-repeat: no-repeat;  /* Evita que a imagem se repita */
+    background-color: #000;  /* Cor de fundo de segurança, caso a imagem falhe ao carregar */
+    background-blend-mode: lighten;
+}
+footer {
+    background-color: black;
+    color: white;
+    height: 15px;
+}
+
+#btnEsqueci {
+    color: rgb(139, 139, 139);
+    border: none;
+    background-color: transparent;
+}
+
+#validationErrorSenha {
+    position: relative;
+    margin-top: 3px;
+    font-size: 12px;
+}

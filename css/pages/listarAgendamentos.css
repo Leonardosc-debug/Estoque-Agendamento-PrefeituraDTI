@@ -1,0 +1,16 @@
+body {
+  margin-top: 70px;
+  background-image: url("../../images/pages/listarAgendamentos/background-agendamento.jpg");
+  background-size: cover; /* Faz a imagem cobrir toda a tela */
+  background-position: center center; /* Centraliza a imagem */
+  background-attachment: fixed; /* Mantém a imagem fixa durante o scroll */
+  background-repeat: no-repeat; /* Evita que a imagem se repita */
+  background-color: #000; /* Cor de fundo de segurança, caso a imagem falhe ao carregar */
+  background-blend-mode: lighten;
+}
+
+@media screen and (min-width: 980px) {
+  .comprimentoTabelaResponsivo {
+    width: 85%;
+  }
+}

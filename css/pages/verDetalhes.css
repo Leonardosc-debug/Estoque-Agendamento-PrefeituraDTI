@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200..800&display=swap');
+
+.scrollPersonalizado::-webkit-scrollbar {
+    width: 5px;
+}
+
+.scrollPersonalizado::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color:#808080;
+}
+
+.colAnexoAltura {
+    height: 400px;
+}
+
+.thumbAnexo:hover {
+    opacity: 60%;
+    cursor: zoom-in;
+    transition: transform 0.3s ease;
+}

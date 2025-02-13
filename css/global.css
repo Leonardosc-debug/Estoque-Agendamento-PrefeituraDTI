@@ -1,0 +1,17 @@
+@import "./frameworks/bootstrap.min.css";
+@import "./frameworks/bootstrap-icons.css";
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+
+* {
+  margin: 0px;
+  padding: 0px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.navbar-brand img {
+  margin-left: 20px;
+}
+
+.justificar-texto {
+  text-align: justify;
+}

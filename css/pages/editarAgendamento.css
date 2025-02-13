@@ -1,0 +1,40 @@
+.scrollPersonalizado::-webkit-scrollbar {
+    width: 5px;
+}
+
+.scrollPersonalizado::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color:#808080;
+}
+
+.colAnexoAltura {
+    height: 400px;
+}
+
+.divButoes {
+    height: 99%;
+}
+
+.zoom-image {
+    transition: transform 0.3s ease; /* Transição suave */
+}
+
+.btnExpandir {
+    background-color: rgba(59, 59, 59, 0.767);
+    border-top-left-radius: 5px;
+}
+
+.btnExpandir:hover {
+    background-color: rgba(0, 0, 0, 0.685);
+    border-top-left-radius: 5px;
+}
+
+.btnUpload {
+    background-color: rgba(59, 59, 59, 0.767);
+    border-top-right-radius: 5px;
+}
+
+.btnUpload:hover {
+    background-color: rgba(8, 189, 8, 0.849);
+    border-top-right-radius: 5px;
+}
