@@ -1,3 +1,7 @@
+assets/database/storage/arquivosAnexos/*
+!assets/database/storage/arquivosAnexos/placeholder.txt
+
+
 package.json
 tsconfig.json
 yarn.lock

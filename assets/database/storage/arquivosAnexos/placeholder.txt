@@ -1,0 +1,3 @@
+Este é o local que armazenou os arquivos upados no site.
+
+placeholder somete para que a pasta apareça no git
