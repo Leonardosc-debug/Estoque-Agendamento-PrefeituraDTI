@@ -72,8 +72,9 @@ function acionarInputArquivo(id) {
   $arquivoUpload.click();
 }
 
-const idAgendamento = "<?php echo $idAgendamento; ?>";
 let formData = new FormData();
+const urlParametros = new URLSearchParams(window.location.search);
+const idAgendamento = urlParametros.get("idAgendamento");
 
 function carregarArquivoFormData(elementoInputComArquivo) {
   const arquivo = $(elementoInputComArquivo)[0].files[0];
@@ -93,18 +94,20 @@ function carregarArquivoFormData(elementoInputComArquivo) {
   }
 }
 
-function carregarTextosAnexos() {
-  const textoInstancia = $(this).val();
-  const id = $(this).attr("id").replace(/[^\d]/g, "");
+const textosEIdAnexosAlterados = {};
+function carregarTextosAnexos(teste) {
+  const textoInstancia = $(teste).val();
+  const id = $(teste).attr("data-idanexo");
 
   textosEIdAnexosAlterados[id] = textoInstancia;
+  console.log(textosEIdAnexosAlterados);
 }
 
 async function salvarEdicao() {
   formData.append("idAgendamento", idAgendamento);
 
   try {
-    const resposta = await $.ajax({
+    const respostaJson = await $.ajax({
       url: "../../../php/actions/salvarEdicao.php",
       type: "POST",
       data: formData,
@@ -127,24 +130,32 @@ async function salvarEdicao() {
 }
 
 async function deletarAgendendamento() {
-  $.ajax({
-    url: "apagarAgendamento.php",
-    type: "POST",
-    data: {
-      idAgendamento,
-    },
-    error: function (respostaJson) {
-      $("#statusSubmit").attr("class", "text-bg-danger p-2 w-25 shadow rounded-2 fs-5 ms-2");
-      $("#statusSubmit").text("ERRO AO APAGAR O AGENDAMENTO!");
-      $("#statusSubmit").fadeIn();
-      setTimeout(function () {
-        $("#statusSubmit").fadeOut();
-      }, 2000);
-    },
-  });
-}
+  try {
+    const respostaJson = await $.ajax({
+      url: "../../../php/actions/apagarAgendamento.php",
+      type: "POST",
+      data: {
+        idAgendamento,
+      },
+    });
 
-const textosEIdAnexosAlterados = {};
+    $("#statusSubmit").attr("class", "text-bg-success p-2 w-25 shadow rounded-2 fs-5 ms-2");
+    $("#statusSubmit").text(
+      "SUCESSO EM APAGAR O AGENDAMENTO! REDIRECIONANDO PARA PÁGINA DE LISTAMENTO!"
+    );
+    $("#statusSubmit").fadeIn();
+    setTimeout(function () {
+      // window.location.href = "../../../php/pages/agendamentos/listarAgendamentos.php";
+    }, 2000);
+  } catch (erro) {
+    $("#statusSubmit").attr("class", "text-bg-danger p-2 w-25 shadow rounded-2 fs-5 ms-2");
+    $("#statusSubmit").text("ERRO AO APAGAR O AGENDAMENTO!");
+    $("#statusSubmit").fadeIn();
+    setTimeout(function () {
+      $("#statusSubmit").fadeOut();
+    }, 2000);
+  }
+}
 
 $(document).ready(function () {
   renderizarOpcoesMarcadas();
@@ -153,7 +164,9 @@ $(document).ready(function () {
     carregarArquivoFormData(this);
   });
 
-  $(".textosAnexos").change(function () {});
+  $(".textosAnexos").change(function () {
+    carregarTextosAnexos(this);
+  });
 
   //Adicionará para envio apenas aqueles campos que foram modificados
   $("#dataAgendamento").change(function () {
