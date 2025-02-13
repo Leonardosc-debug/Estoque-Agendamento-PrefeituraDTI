@@ -4,7 +4,7 @@ include "../../../database/conexao.php";
 $idAgendamento = $_GET["idAgendamento"];
 
 $sqlAgendamento =
-    "SELECT `idAgendamento`,
+"SELECT `idAgendamento`,
 `dataAgendamento`,
 `tipoAgendamento`, 
 `conteudoAgendamento`, 
@@ -12,7 +12,7 @@ $sqlAgendamento =
 `statusAgendamento` 
 FROM `agendamento` WHERE `idAgendamento` = {$idAgendamento} ORDER BY `dataAgendamento` DESC";
 $sqlAnexo =
-    "SELECT `idAnexo`, 
+"SELECT `idAnexo`, 
 `idAgendamento`, 
 `nomeAnexo`, 
 `textoAnexo` 
@@ -184,7 +184,7 @@ $iconeStatus = null;
                     </div>
                     <textarea
                         class="w-100 h-100 ms-1 bg-transparent border-0 text-white justificar-texto overflow-y-auto scrollPersonalizado textosAnexos"
-                        id="textoAnexo<?= $linhaTabela["idAnexo"] ?>"
+                        data-idanexo="<?= $linhaTabela["idAnexo"] ?>"
                         style="max-height: 47%; resize: none;"> <?= $linhaTabela['textoAnexo']; ?></textarea>
                 </div>
                 <?php
@@ -197,7 +197,8 @@ $iconeStatus = null;
 
     <!-- Status e botão de salvar flutuante -->
     <div class="fixed-bottom p-1 text-white">
-        <p class="text-bg-success p-2 w-50 shadow rounded-2 fs-6 ms-2" id="statusSubmit" style="display: none;">EDIÇÃO REALIZADA COM
+        <p class="text-bg-success p-2 w-50 shadow rounded-2 fs-6 ms-2" id="statusSubmit" style="display: none;">EDIÇÃO
+            REALIZADA COM
             SUCESSO!</p>
         <div class="position-absolute bottom-0 end-0 me-3">
             <button class="btn btn-lg rounded-circle btn-danger me-3 mb-3"
