@@ -2,7 +2,6 @@
 include "../../../database/conexao.php";
 
 $idAgendamento = $_GET["idAgendamento"];
-
 $sqlAgendamento =
 "SELECT `idAgendamento`,
 `dataAgendamento`,
@@ -20,10 +19,10 @@ FROM `anexosagendamento`
 WHERE `idAgendamento` = {$idAgendamento}";
 
 // Consulta e atribuição dos campos da tabela "agendamento"
-$resultadoConsultaAgendamento = mysqli_query($conn, $sqlAgendamento) or die("Erro ao executar a consulta!" . mysqli_error($conn));
+$resultadoConsultaAgendamento = mysqli_query($conn, $sqlAgendamento) or die("Erro ao executar a consulta!");
 $dadosEmColunasAgendamento = mysqli_fetch_assoc($resultadoConsultaAgendamento);
 // Consulta e atribuição dos campos da tabela "anexo"
-$resultadoConsultaAnexo = mysqli_query($conn, $sqlAnexo) or die("Erro ao executar a consulta!" . mysqli_error($conn));
+$resultadoConsultaAnexo = mysqli_query($conn, $sqlAnexo) or die("Erro ao executar a consulta!");
 $iconeStatus = null;
 ?>
 
@@ -95,7 +94,7 @@ $iconeStatus = null;
                             required>
                     </div>
                     <label class="form-label">Tipo do agendamento:</label>
-                    <div class="mb-2 form-check">
+                    <div class="mb-2 form-check" data-tiposalvo = "<?= $dadosEmColunasAgendamento; ?>">
                         <input class="form-check-input" type="radio" name="tipoAgendamento" id="tipoAgendamentoManut"
                             value="Manutenção" checked>
                         <label class="form-check-label" for="tipoAgendamentoManut"> Manutenção</label>
