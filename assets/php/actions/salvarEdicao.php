@@ -1,98 +1,147 @@
 <?php 
-include '../../database/conexao.php';
+require "../../database/conexao.php";
 
-function obterDadosFormDataPassados(mysqli $conn) 
+obterDadosFormData($conn);
+
+function obterDadosFormData(mysqli $conn) 
 {
     $camposTabelaAgendamento = [
-        "idAgendamento", "dataAgendamento", 
-        "tipoAgendamento", "conteudoAgendamento", 
-        "conteudoAgendamento", "envolvidosAgendamento", 
-        "statusAgendamento"
+        "dataAgendamento", "tipoAgendamento", 
+        "conteudoAgendamento", "conteudoAgendamento", 
+        "envolvidosAgendamento", "statusAgendamento"
     ];
     $camposTabelaAnexo = [
-        "textosAnexos", "idsTextosAlterados",
+        "textosAnexosAlterados", "idsTextosAlterados",
         "nomesImagensAlterados"
     ];
+    $modificacaoAgendamento = false;
+    $modificacaoTextosAnexos = false;
+
+    $idAgendamento = null;
+    if (isset($_POST["idAgendamento"]) && is_numeric($_POST["idAgendamento"])) {
+        $idAgendamento = (int) $_POST["idAgendamento"];  // Converte diretamente para inteiro após validação
+    } else {
+        die("As operações não podem continuar sem um id de agendamento válido");
+    }
 
     $dadosObtidos = [];
     foreach ($camposTabelaAgendamento as $campo) {
         if (!isset($_POST[$campo])) continue;
         $dadosObtidos[$campo] = mysqli_real_escape_string($conn, $_POST[$campo]);
+        $modificacaoAgendamento = true;
     }
     foreach ($camposTabelaAnexo as $campo) {
         if (!isset($_POST[$campo])) continue;
         $dadosObtidos[$campo] = array_map(function($texto) use ($conn) {
                 return mysqli_real_escape_string($conn, $texto);
             }, $_POST["$campo"]);
+        if ($campo == "textosAnexosAlterados") {
+            $modificacaoTextosAnexos = true;
+        }
     }
-    
-    salvarEdicaoBancoDados($conn, $dadosObtidos, $camposTabelaAgendamento, $camposTabelaAnexo);
+
+    converterDadosParaConsultaSql($conn, $dadosObtidos, $camposTabelaAgendamento, $modificacaoAgendamento, $modificacaoTextosAnexos, $idAgendamento);
 }
 
-obterDadosFormDataPassados($conn);
-
-function salvarEdicaoBancoDados(mysqli $conn, array $dadosObtidos, array $camposTabelaAgendamento, array $camposTabelaAnexo) 
+function converterDadosParaConsultaSql(
+    mysqli $conn,
+    array $dadosObtidos, array $camposTabelaAgendamento, 
+    bool $modificacaoAgendamento, bool $modificacaoTextosAnexos, 
+    int $idAgendamento) 
 {
-    $arrayAdicoesSqlAgendamento = [];
-    foreach ($dadosObtidos as $dado => $valor) {
-        if (in_array($dado, $camposTabelaAgendamento)) {
-            $arrayAdicoesSql[] = "`$dado` = '" . $valor . "'";
+    // Se possuir modificação no agendamento executar a SQL de Agendamento
+    if ($modificacaoAgendamento) {
+        $retornoAgendamento = construirSqlAgendamento($dadosObtidos, $camposTabelaAgendamento, $idAgendamento);
+        print_r($retornoAgendamento["parametros"]);
+        $stmt = $conn->prepare($retornoAgendamento["consulta"]);
+        $stmt->bind_param($retornoAgendamento["tipos"], ...$retornoAgendamento["parametros"]);
+        if ($stmt->execute()) {
+            echo "Agendamento atualizado com sucesso!<br>";
+        } else {
+            echo "Erro na atualização do agendamento<br>";
+            error_log($stmt->error);
+        }
+        $stmt->close();
+    }
+
+    // Se possuir modificação nos textos dos anexos executar a SQL dos Textos dos anexos
+    if ($modificacaoTextosAnexos) {
+        $retornoTextosAnexos = construirSqlTextosAnexos($dadosObtidos);
+        $stmt = $conn->prepare($retornoTextosAnexos["consulta"]);
+        $stmt->bind_param($retornoTextosAnexos["tipos"], ...$retornoTextosAnexos["parametros"]);
+        if ($stmt->execute()) {
+            echo "Agendamento atualizado com sucesso!<br>";
+        } else {
+            echo "Erro na atualização do agendamento<br>";
+            error_log($stmt->error);
+        }
+        $stmt->close();
+    }
+}
+
+function construirSqlAgendamento(array $dadosObtidos, array $camposTabelaAgendamento, int $idAgendamento) 
+{
+    $QRAgendamento = "UPDATE agendamento SET ";
+    $tipos = "";
+    $parametros = [];
+    foreach ($dadosObtidos as $campo => $valor) {
+        if (!in_array($campo, $camposTabelaAgendamento)) continue;
+        $QRAgendamento .= "$campo = ?, ";
+        $parametros[] = $valor;
+        $tipos .= "s"; // "s" para cada string do $campo
+    }
+
+    // Remove a virgula e o espaçamento para inserir o final da consulta
+    $QRAgendamento = rtrim($QRAgendamento, ", ");
+    $QRAgendamento.= " WHERE idAgendamento = ?;";
+    $parametros[] = $idAgendamento;
+    $tipos .= "i"; // "i" para inteiro id adicionado no final
+
+
+    if (isset($parametros)) {
+        return [
+            "consulta" => $QRAgendamento,
+            "parametros" => $parametros,
+            "tipos" => $tipos
+        ];
+    }
+
+    return null;
+}
+
+function construirSqlTextosAnexos(array $dadosObtidos) 
+{
+    $arrayAdicoesSqlAnexos = [];
+    foreach ($dadosObtidos["idsTextosAlterados"] as $index => $id) {
+        if (isset($dadosObtidos["textosAnexosAlterados"][$index])) {
+            $arrayAdicoesSqlAnexos[$id] = $dadosObtidos["textosAnexosAlterados"][$index];
         }
     }
-    $sqlAnexos = "UPDATE anexosagendamento SET textoAnexo = CASE ";
-    $parametrosSubstituir = [];
-    foreach ($dadosObtidos["textosAnexos"] as $indexTexto => $texto) {
-        foreach ($dadosObtidos["idsTextosAlterados"] as $indexId => $id) {
-            $sqlAnexos .= "WHEN idAnexo = $id THEN '$texto' ";
+
+    if (!empty($arrayAdicoesSqlAnexos)) {
+        $QRAnexos = "UPDATE anexosagendamento SET textoAnexo = CASE ";
+        $parametros = [];
+        $tipos = "";
+
+        foreach ($arrayAdicoesSqlAnexos as $id => $textoAnexo) {
+            $QRAnexos .= "WHEN idAnexo = ? THEN ? ";
+            $parametros[] = $id;
+            $parametros[] = $textoAnexo;
+            $tipos .= "is"; // "i" para inteiro e "s" para string
         }
+
+        $QRAnexos .= "END WHERE idAnexo IN (" . implode(",", array_keys($arrayAdicoesSqlAnexos)) . ");";
+
+        return [
+            "consulta" => $QRAnexos,
+            "parametros" => $parametros,
+            "tipos" => $tipos
+        ];
     }
 
-    $sqlAgendamento = "";
-    if (!empty($arrayAdicoesSqlAgendamento)) {
-        $sqlAgendamento = 
-        "UPDATE `agendamento` SET "
-        . implode(",", $arrayAdicoesSql)
-        . " WHERE `idAgendamento` = {$dadosObtidos["idAgendamento"]};"; ;
-    }
+    return null;
 }
 
-$edicaoAgendamento = false;
-$arrayAdicoesSql = [];
-if (!empty($dataAgendamento)) {
-    $arrayAdicoesSql[] = "`dataAgendamento` = '" . $dataAgendamento . "'";
-    $edicaoAgendamento = true;
-} 
-if (!empty($tipoAgendamento)) {
-    $arrayAdicoesSql[] = "`tipoAgendamento` = '" . $tipoAgendamento . "'";
-    $edicaoAgendamento = true;
-} 
-if (!empty($conteudoAgendamento)) {
-    $arrayAdicoesSql[] = "`conteudoAgendamento` = '" . $conteudoAgendamento . "'";
-    $edicaoAgendamento = true;
-} 
-if (!empty($envolvidosAgendamento)) {
-    $arrayAdicoesSql[] = "`envolvidosAgendamento` = '" . $envolvidosAgendamento . "'";
-    $edicaoAgendamento = true;
-} 
-if (!empty($statusAgendamento)) {
-    $arrayAdicoesSql[] = "`statusAgendamento` = '" . $statusAgendamento . "'";
-    $edicaoAgendamento = true;
-}
-
-if ($edicaoAgendamento) {
-    $sqlAgendamento = "UPDATE `agendamento` SET ";
-    $sqlAgendamento .= implode(",", $arrayAdicoesSql);
-    $sqlAgendamento .= " WHERE `idAgendamento` = {$idAgendamento};";
-    echo $sqlAgendamento;
-    if (mysqli_query($conn, $sqlAgendamento)) {
-        echo json_encode(["sucesso" => true, "mensagem" => "A parte do Agendamento foi editado com sucesso"]);
-    } else {
-        echo json_encode(["sucesso" => false, "mensagem" => "Falha ao editar o Agendamento"]);
-        print_r($sqlAgendamento);
-        http_response_code(400);
-        die("Falha ao editar o Agendamento");
-    }
-}
 
 function alterarArquivo(mysqli $conn , array $nomesImagensTratadosAlterados)
 {
@@ -139,37 +188,5 @@ function alterarArquivo(mysqli $conn , array $nomesImagensTratadosAlterados)
     }
 }
 
-function alterarDescricaoAnexo(mysqli $conn, array $textosAnexosTratados, array $idsTextosAlterados) 
-{
-    for($i = 0; $i < count($textosAnexosTratados); $i++) {
-        $textoInstancia = $textosAnexosTratados[$i];
-        $idInstancia = $idsTextosAlterados[$i];
-
-        $sql = 
-        "UPDATE `anexosagendamento` 
-        SET `textoAnexo` = '$textoInstancia' 
-        WHERE `idAnexo` = '$idInstancia'";
-        if (mysqli_query($conn, $sql)) {
-            echo json_encode(["sucesso" => true, "mensagem" => "Textos dos anexos atualizados com sucesso"]);
-        } else {
-            http_response_code(400);
-            echo json_encode(["sucesso" => false, "mensagem" => "Falha ao atualizar o texto dos anexos"]);
-            die("Erro ao executar a consulta!" . mysqli_error($conn));
-        }
-    }    
-}
-
-if ((isset($_FILES["anexoArquivos"])) and (!empty($nomesImagensTratadosAlterados))) {
-    alterarArquivo($conn, $nomesImagensTratadosAlterados);
-}
-
-// Seção do salvamento dos textos dos anexos, não será executado se faltar algum campo necessário
-if ((!empty($textosAnexosTratados)) and (!empty($idsTextosAlterados))) {
-    foreach ($idsTextosAlterados as $id) {
-        if (!is_numeric($id)) {
-            http_response_code(400);
-            die(json_encode(["sucesso" => false, "mensagem" => "Os ids recebidos são inválidos"]));
-        }
-    }
-    alterarDescricaoAnexo($conn, $textosAnexosTratados, $idsTextosAlterados);
-}
+// Fechar a conexão ao banco de dados
+$conn->close();
