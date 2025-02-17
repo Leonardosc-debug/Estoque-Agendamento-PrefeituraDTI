@@ -22,7 +22,7 @@ document.addEventListener("mouseover", function (elemento) {
 });
 
 function renderizarOpcoesMarcadas() {
-  const tipoAgendamento = "<?php echo $dadosEmColunasAgendamento['tipoAgendamento']; ?>";
+  const tipoAgendamento = $("div[data-tipoagendamento]");
   const statusAgendamento = "<?php echo $dadosEmColunasAgendamento['statusAgendamento']; ?>";
 
   if (tipoAgendamento == "Organização") {
@@ -100,12 +100,22 @@ function carregarTextosAnexos(teste) {
   const id = $(teste).attr("data-idanexo");
 
   textosEIdAnexosAlterados[id] = textoInstancia;
-  console.log(textosEIdAnexosAlterados);
 }
 
 async function salvarEdicao() {
   formData.append("idAgendamento", idAgendamento);
 
+  // Adiciona as chaves (IDs) separadamente no FormData
+  Object.keys(textosEIdAnexosAlterados).forEach((id, index) => {
+    formData.append("idsTextosAlterados[]", id);
+  });
+
+  // Adiciona os valores (textos) separadamente no FormData
+  Object.values(textosEIdAnexosAlterados).forEach((texto, index) => {
+    formData.append("textosAnexosAlterados[]", texto);
+  });
+
+  // Envia os dados do FormData para o PHP para salvar as alterações no banco de dados.
   try {
     const respostaJson = await $.ajax({
       url: "../../../php/actions/salvarEdicao.php",
