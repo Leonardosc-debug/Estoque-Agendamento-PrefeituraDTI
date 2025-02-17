@@ -1,13 +1,13 @@
-<?php 
+<?php
 const SERVIDOR = "localhost";
 const USUARIO = "root";
 const SENHA = "";
 const DBNOME = "dtiagendaestoque";
 
-// Criar conexão com o banco de dados
+// Criar conexão com MySQLi
 try {
-    $conn = mysqli_connect(SERVIDOR, USUARIO, SENHA, DBNOME);
-    mysqli_set_charset($conn, "utf8");
+    $conn = new mysqli(SERVIDOR, USUARIO, SENHA, DBNOME);
+    $conn->set_charset("utf8");
 } catch (mysqli_sql_exception $e) {
     http_response_code(500);
     error_log($e->getMessage());
