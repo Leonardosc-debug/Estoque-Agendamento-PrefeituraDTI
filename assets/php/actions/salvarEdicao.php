@@ -1,8 +1,6 @@
 <?php 
 require "../../database/conexao.php";
 
-obterDadosFormData($conn);
-
 function obterDadosFormData(mysqli $conn) 
 {
     $camposTabelaAgendamento = [
@@ -12,7 +10,7 @@ function obterDadosFormData(mysqli $conn)
     ];
     $camposTabelaAnexo = [
         "textosAnexosAlterados", "idsTextosAlterados",
-        "nomesImagensAlterados"
+        "idsAnexosAlterados"
     ];
     $modificacaoAgendamento = false;
     $modificacaoTextosAnexos = false;
@@ -40,10 +38,10 @@ function obterDadosFormData(mysqli $conn)
         }
     }
 
-    converterDadosParaConsultaSql($conn, $dadosObtidos, $camposTabelaAgendamento, $modificacaoAgendamento, $modificacaoTextosAnexos, $idAgendamento);
+    executarSqlDosRetornos($conn, $dadosObtidos, $camposTabelaAgendamento, $modificacaoAgendamento, $modificacaoTextosAnexos, $idAgendamento);
 }
 
-function converterDadosParaConsultaSql(
+function executarSqlDosRetornos(
     mysqli $conn,
     array $dadosObtidos, array $camposTabelaAgendamento, 
     bool $modificacaoAgendamento, bool $modificacaoTextosAnexos, 
@@ -73,6 +71,21 @@ function converterDadosParaConsultaSql(
             echo "Agendamento atualizado com sucesso!<br>";
         } else {
             echo "Erro na atualização do agendamento<br>";
+            error_log($stmt->error);
+        }
+        $stmt->close();
+    }
+
+    if (isset($_FILES["anexoArquivos"])) {
+        $retornoAlteracaoArquivo = alterarArquivo($dadosObtidos["nomesImagensAlterados"]);
+        print_r($dadosObtidos["nomesImagensAlterados"]);
+        print_r($retornoAlteracaoArquivo);
+        $stmt = $conn->prepare($retornoAlteracaoArquivo["consulta"]);
+        $stmt->bind_param($retornoAlteracaoArquivo["tipos"], ...$retornoAlteracaoArquivo["parametros"]);
+        if ($stmt->execute()) {
+            echo "Arquivo(s) do agendamento atualizado com sucesso!<br>";
+        } else {
+            echo "Erro na atualização do arquivo(s) do agendamento<br>";
             error_log($stmt->error);
         }
         $stmt->close();
@@ -142,8 +155,8 @@ function construirSqlTextosAnexos(array $dadosObtidos)
     return null;
 }
 
-
-function alterarArquivo(mysqli $conn , array $nomesImagensTratadosAlterados)
+// EM CONSTRUÇÃO, IMPLEMENTAR A TROCA DOS ARQUIVOS BASEADO NO ID DO ANEXO
+function alterarArquivo(array $idsAnexosAlterados)
 {
     //Mapeamento para tipos de extenções de arquivos
     $mapaMimeExtensao = [
@@ -152,6 +165,9 @@ function alterarArquivo(mysqli $conn , array $nomesImagensTratadosAlterados)
         'image/png' => '.png',
         // É possível adicionar mais no futuro
     ];
+    $querryAlteraReferenciaArquivo = "UPDATE anexosAgendamento";
+    $parametros = [];
+    $tipos = "";
     $anexosEditadosImportados = $_FILES["anexoArquivos"];
     
     for ($contador = 0; $contador < count($anexosEditadosImportados["name"]); $contador++) {
@@ -162,7 +178,7 @@ function alterarArquivo(mysqli $conn , array $nomesImagensTratadosAlterados)
             unset($anexosEditadosImportados[$contador]);
             http_response_code(400);
         } else {
-            $pegarNomeArquivo = $nomesImagensTratadosAlterados[$contador];
+            $pegarNomeArquivo = ;
             $tratandoNomeArquivo = pathinfo($pegarNomeArquivo);
             $nomeArquivoComExtensao = $tratandoNomeArquivo["filename"] . $extensaoArquivoInstancia;
             $caminhoDestino = "../../database/storage/arquivosAnexos/";
@@ -170,23 +186,33 @@ function alterarArquivo(mysqli $conn , array $nomesImagensTratadosAlterados)
             
             // Se existem arquivos com o mesmo nome, os exclui
             if (file_exists($caminhoDestino . $pegarNomeArquivo)) {
-                echo json_encode(["sucesso" => true, "mensagem" => "Havia um arquivo neste index, porem ele foi removido", "extensao" => "valido"]);
                 unlink($caminhoDestino . $pegarNomeArquivo);
             }
 
             if (rename($anexosEditadosImportados["tmp_name"][$contador], $destinoArquivoComNovoNome)) {
-                $sqlAnexoInstancia = "UPDATE `anexosagendamento` SET `nomeAnexo` = '$nomeArquivoComExtensao' WHERE `nomeAnexo` = '$pegarNomeArquivo'";
-                if (mysqli_query($conn, $sqlAnexoInstancia)) {
-                    echo json_encode(["sucesso" => true, "mensagem" => "Sucesso em mover o arquivo para o servidor", "extensao" => "valido"]);       
-                } else {
-                    echo json_encode(["sucesso" => false, "mensagem" => "Erro na movimentação do arquivo enviado para o servidor", "extensao" => "valido"]);
-                    http_response_code(400);
-                    die("Erro na movimentação do arquivo enviado" . mysqli_error($conn));
-                }
+                $querryAlteraReferenciaArquivo .= "SET nomeAnexo = ?, ";
+                $parametros[] = $nomeArquivoComExtensao;
+                $tipos.= "s"; // "s" para string
             }
         }
     }
+    
+    // Remove a virgula e o espaço para inserir o final da consulta
+    rtrim(", ", $querryAlteraReferenciaArquivo);
+    $querryAlteraReferenciaArquivo .= "WHERE nomeAnexo = ?";
+
+    if (isset($parametros)) {
+        return [
+            "consulta" => $querryAlteraReferenciaArquivo,
+            "parametros" => $parametros,
+            "tipos" => $tipos
+        ];
+    }
+
+    return null;
 }
 
+// Execução de funções
+obterDadosFormData($conn);
 // Fechar a conexão ao banco de dados
 $conn->close();
