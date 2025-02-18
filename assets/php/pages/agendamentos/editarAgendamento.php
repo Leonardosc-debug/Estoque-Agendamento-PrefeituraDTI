@@ -23,7 +23,8 @@ $resultadoConsultaAgendamento = mysqli_query($conn, $sqlAgendamento) or die("Err
 $dadosEmColunasAgendamento = mysqli_fetch_assoc($resultadoConsultaAgendamento);
 // Consulta e atribuição dos campos da tabela "anexo"
 $resultadoConsultaAnexo = mysqli_query($conn, $sqlAnexo) or die("Erro ao executar a consulta!");
-$iconeStatus = null;
+
+$conn -> close();
 ?>
 
 <!DOCTYPE html>
@@ -94,7 +95,7 @@ $iconeStatus = null;
                             required>
                     </div>
                     <label class="form-label">Tipo do agendamento:</label>
-                    <div class="mb-2 form-check" data-tiposalvo = "<?= $dadosEmColunasAgendamento; ?>">
+                    <div class="mb-2 form-check" data-tiposalvo="<?= $dadosEmColunasAgendamento['tipoAgendamento']; ?>">
                         <input class="form-check-input" type="radio" name="tipoAgendamento" id="tipoAgendamentoManut"
                             value="Manutenção" checked>
                         <label class="form-check-label" for="tipoAgendamentoManut"> Manutenção</label>
@@ -119,7 +120,7 @@ $iconeStatus = null;
                             <label for="floatingInputGroup1">Envolvidos na tarefa</label>
                         </div>
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" data-statussalvo="<?= $dadosEmColunasAgendamento["statusAgendamento"]; ?>">
                         <span class="input-group-text bg-black h-75"><i id="iconeStatus"
                                 class="bi bi-tag text-light"></i></span>
                         <select class="mb-3 form-select" id="selectStatus" name="statusAgendamento"
@@ -178,7 +179,8 @@ $iconeStatus = null;
                                 style="width: 50%; font-size: 190%;"></button>
                             <input class="visually-hidden uploadEscondido"
                                 id="arquivoUpload<?= $linhaTabela["idAnexo"] ?>"
-                                data-arquivo="<?= $linhaTabela['nomeAnexo']; ?>" type="file" accept=".jpg, .jpeg, .png">
+                                data-arquivo="<?= $linhaTabela['nomeAnexo']; ?>"
+                                data-idanexo="<?= $linhaTabela["idAnexo"] ?>" type="file" accept=".jpg, .jpeg, .png">
                         </div>
                     </div>
                     <textarea
@@ -210,8 +212,8 @@ $iconeStatus = null;
         </div>
     </div>
 
-    <!-- Código PHP para criação dos modal's das fotos dos anexos para cada anexo. -->
     <?php
+    // Código PHP para criação dos modal's das fotos dos anexos para cada anexo.
     mysqli_data_seek($resultadoConsultaAnexo, 0); //Reseta o ponteiro
     $contIdModal = 0;
     while ($linhaTabela = mysqli_fetch_assoc($resultadoConsultaAnexo)) {
