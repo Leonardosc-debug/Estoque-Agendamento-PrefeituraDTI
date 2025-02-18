@@ -22,35 +22,36 @@ document.addEventListener("mouseover", function (elemento) {
 });
 
 function renderizarOpcoesMarcadas() {
-  const tipoAgendamento = $("div[data-tipoagendamento]");
-  const statusAgendamento = "<?php echo $dadosEmColunasAgendamento['statusAgendamento']; ?>";
+  const tipoAgendamento = $("div[data-tiposalvo]").attr("data-tiposalvo");
+  const statusAgendamento = $("div[data-statussalvo]").attr("data-statussalvo");
 
-  if (tipoAgendamento == "Organização") {
-    document.getElementById("tipoAgendamentoOrga").checked = true;
-  } else if (tipoAgendamento == "Manutenção") {
-    document.getElementById("tipoAgendamentoManut").checked = true;
+  if (tipoAgendamento === "Organização") {
+    $("#tipoAgendamentoOrga").prop("checked", true);
+  } else if (tipoAgendamento === "Manutenção") {
+    $("#tipoAgendamentoManut").prop("checked", true);
   }
 
   switch (statusAgendamento) {
     case "pendente":
-      document.querySelector('option[value="pendente"').setAttribute("selected", "true");
+      $('option[value="pendente"]').prop("selected", true);
       break;
     case "realizado":
-      document.querySelector('option[value="realizado"').setAttribute("selected", "true");
+      $('option[value="realizado"]').prop("selected", true);
       break;
   }
+  alteradorIconeStatus();
 }
 
 //Função de alteração de icone do span do input status
 function alteradorIconeStatus() {
   const $iconeStatus = $("#iconeStatus");
   const $elementoStatus = $("#selectStatus");
-  if ($elementoStatus.value == "pendente") {
-    $iconeStatus = "bi bi-circle-fill text-warning";
-    $elementoStatus.classList.add("focus-ring");
+  if ($elementoStatus.val() == "pendente") {
+    $iconeStatus.attr("class", "bi bi-circle-fill text-warning");
+    $elementoStatus.addClass("focus-ring");
   }
-  if ($elementoStatus.value == "realizado") {
-    $iconeStatus.classList = "bi bi-check-circle-fill text-success";
+  if ($elementoStatus.val() == "realizado") {
+    $iconeStatus.attr("class", "bi bi-check-circle-fill text-success");
   }
 }
 
@@ -72,16 +73,16 @@ function acionarInputArquivo(id) {
   $arquivoUpload.click();
 }
 
-let formData = new FormData();
 const urlParametros = new URLSearchParams(window.location.search);
 const idAgendamento = urlParametros.get("idAgendamento");
 
-function carregarArquivoFormData(elementoInputComArquivo) {
+const arquivosComIdsAlteradosPendentes = {};
+function carregarArquivo(elementoInputComArquivo) {
   const arquivo = $(elementoInputComArquivo)[0].files[0];
 
-  // Verifca se há arquivo enviado, evita rodar a função sem arquivo.
-  if (arquivo.length > 0) {
-    const id = $(elementoInputComArquivo).attr("id").replace(/[^\d]/g, "");
+  // Verifca se há arquivo enviado, evitando rodar a função sem arquivo.
+  if (arquivo) {
+    const id = $(elementoInputComArquivo).attr("data-idanexo");
 
     const localArquivoTemp = URL.createObjectURL(arquivo);
     const nomeArquivoSubstituido = $(elementoInputComArquivo).attr("data-arquivo");
@@ -89,31 +90,55 @@ function carregarArquivoFormData(elementoInputComArquivo) {
     $("#imgFundo" + id).attr("src", localArquivoTemp);
     $("#imgModal" + id).attr("src", localArquivoTemp);
 
-    formData.set("nomesImagensAlterados[]", nomeArquivoSubstituido);
-    formData.set("anexoArquivos[]", arquivo);
+    arquivosComIdsAlteradosPendentes[id] = arquivo;
   }
 }
 
-const textosEIdAnexosAlterados = {};
-function carregarTextosAnexos(teste) {
-  const textoInstancia = $(teste).val();
-  const id = $(teste).attr("data-idanexo");
+const textosComIdAnexosAlteradosPendentes = {};
+function carregarTextosAnexos(textoAnexoInstancia) {
+  const textoInstancia = $(textoAnexoInstancia).val();
+  const id = $(textoAnexoInstancia).attr("data-idanexo");
 
-  textosEIdAnexosAlterados[id] = textoInstancia;
+  textosComIdAnexosAlteradosPendentes[id] = textoInstancia;
 }
 
-async function salvarEdicao() {
-  formData.append("idAgendamento", idAgendamento);
+function prepararFormdata() {
+  const formData = new FormData();
 
+  // Campos Tabela Agendamento
+  formData.set("idAgendamento", idAgendamento);
+  formData.set("dataAgendamento", $("#dataAgendamento").val());
+  formData.set("tipoAgendamento", $("input[name='tipoAgendamento']").val());
+  formData.set("conteudoAgendamento", $("#conteudoAgendamento").val());
+  formData.set("envolvidosAgendamento", $("#envolvidosAgendamento").val());
+  formData.set("statusAgendamento", $("#selectStatus").val());
+
+  // Campos Tabela Anexos
   // Adiciona as chaves (IDs) separadamente no FormData
-  Object.keys(textosEIdAnexosAlterados).forEach((id, index) => {
+  Object.keys(textosComIdAnexosAlteradosPendentes).forEach((id, index) => {
     formData.append("idsTextosAlterados[]", id);
   });
 
   // Adiciona os valores (textos) separadamente no FormData
-  Object.values(textosEIdAnexosAlterados).forEach((texto, index) => {
+  Object.values(textosComIdAnexosAlteradosPendentes).forEach((texto, index) => {
     formData.append("textosAnexosAlterados[]", texto);
   });
+
+  // Adiciona as chaves (IDs) separadamente no FormData
+  Object.keys(arquivosComIdsAlteradosPendentes).forEach((id, index) => {
+    formData.append("idsAnexosAlterados[]", id);
+  });
+
+  // Adiciona os valores (arquivos) separadamente no FormData
+  Object.values(arquivosComIdsAlteradosPendentes).forEach((arquivo, index) => {
+    formData.append("anexoArquivos[]", arquivo);
+  });
+
+  return formData;
+}
+
+async function salvarEdicao() {
+  const formData = prepararFormdata();
 
   // Envia os dados do FormData para o PHP para salvar as alterações no banco de dados.
   try {
@@ -171,28 +196,11 @@ $(document).ready(function () {
   renderizarOpcoesMarcadas();
 
   $(".uploadEscondido").change(function () {
-    carregarArquivoFormData(this);
+    carregarArquivo(this);
   });
 
   $(".textosAnexos").change(function () {
     carregarTextosAnexos(this);
-  });
-
-  //Adicionará para envio apenas aqueles campos que foram modificados
-  $("#dataAgendamento").change(function () {
-    formData.set("dataAgendamento", $(this).val());
-  });
-  $("input[name='tipoAgendamento']").change(function () {
-    formData.set("tipoAgendamento", $(this).val());
-  });
-  $("#conteudoAgendamento").change(function () {
-    formData.set("conteudoAgendamento", $(this).val());
-  });
-  $("#envolvidosAgendamento").change(function () {
-    formData.set("envolvidosAgendamento", $(this).val());
-  });
-  $("#selectStatus").change(function () {
-    formData.set("statusAgendamento", $(this).val());
   });
 
   $("button#submitDelete").click(deletarAgendendamento);
