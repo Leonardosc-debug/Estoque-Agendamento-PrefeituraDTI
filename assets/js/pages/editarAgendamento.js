@@ -1,24 +1,23 @@
-document.addEventListener("change", function () {
-  alteradorIconeStatus();
+// Variaveís globais
+const urlParametros = new URLSearchParams(window.location.search);
+const idAgendamento = urlParametros.get("idAgendamento");
+const textosComIdAnexosAlteradosPendentes = {};
+const arquivosComIdsAlteradosPendentes = {};
+
+// PopperJS
+const $tooltipTriggerList = $('[data-bs-toggle="tooltip"]');
+const tooltipList = [...$tooltipTriggerList].map(
+  (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+);
+
+$(".divButoes").on("mouseover mouseleave", function (evento) {
+  $(this).toggleClass("opacity-0", evento.type === "mouseleave");
 });
 
-document.addEventListener("mouseover", function (elemento) {
-  if (
-    elemento.target.classList.contains("divButoes") ||
-    elemento.target.classList.contains("butoesImagem")
-  ) {
-    let butoesImagem = elemento.target.querySelectorAll(".butoesImagem");
-
-    butoesImagem.forEach((botao) => {
-      botao.classList.remove("visually-hidden");
-    });
-  } else {
-    let butoesImagem = document.querySelectorAll(".butoesImagem");
-
-    butoesImagem.forEach((botao) => {
-      botao.classList.add("visually-hidden");
-    });
-  }
+$(".btnExpandir").on("mouseover mouseleave", function (evento) {
+  const idInstancia = this.id.substring(11);
+  const $imagemDoAnexo = $("#imgFundo" + idInstancia);
+  $imagemDoAnexo.css("transform", evento.type === "mouseover" ? "scale(1.5)" : "scale(1)");
 });
 
 function renderizarOpcoesMarcadas() {
@@ -55,28 +54,12 @@ function alteradorIconeStatus() {
   }
 }
 
-function expandirImagemFundo(botao) {
-  let idInstancia = botao.id.substring(11);
-  const zoomImage = document.querySelector("#imgFundo" + idInstancia);
-  zoomImage.style.transform = "scale(1.5)";
-}
-
-function retrairImagemFundo(botao) {
-  let idInstancia = botao.id.substring(11);
-  const zoomImage = document.querySelector("#imgFundo" + idInstancia);
-  zoomImage.style.transform = "none";
-}
-
 function acionarInputArquivo(id) {
   const $arquivoUpload = $("#arquivoUpload" + id);
 
   $arquivoUpload.click();
 }
 
-const urlParametros = new URLSearchParams(window.location.search);
-const idAgendamento = urlParametros.get("idAgendamento");
-
-const arquivosComIdsAlteradosPendentes = {};
 function carregarArquivo(elementoInputComArquivo) {
   const arquivo = $(elementoInputComArquivo)[0].files[0];
 
@@ -94,7 +77,6 @@ function carregarArquivo(elementoInputComArquivo) {
   }
 }
 
-const textosComIdAnexosAlteradosPendentes = {};
 function carregarTextosAnexos(textoAnexoInstancia) {
   const textoInstancia = $(textoAnexoInstancia).val();
   const id = $(textoAnexoInstancia).attr("data-idanexo");
@@ -206,8 +188,3 @@ $(document).ready(function () {
   $("button#submitDelete").click(deletarAgendendamento);
   $("button#submit").click(salvarEdicao);
 });
-
-const $tooltipTriggerList = $('[data-bs-toggle="tooltip"]');
-const tooltipList = [...$tooltipTriggerList].map(
-  (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
-);
