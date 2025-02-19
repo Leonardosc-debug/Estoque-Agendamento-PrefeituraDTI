@@ -1,5 +1,5 @@
 <?php
-include "../../../database/conexao.php";
+require "../../../database/conexao.php";
 
 $idAgendamento = $_GET["idAgendamento"];
 $sqlAgendamento =
@@ -167,14 +167,11 @@ $conn -> close();
                                 id="imgFundo<?= $linhaTabela["idAnexo"] ?>"
                                 src="../../../database/storage/arquivosAnexos/<?= $linhaTabela['nomeAnexo']; ?>" alt="">
                         </div>
-                        <div class="d-flex w-100 align-content-center position-absolute divButoes">
-                            <button
-                                class="bi bi-zoom-in text-white h-100 p-0 border-0 visually-hidden butoesImagem btnExpandir"
+                        <div class="d-flex opacity-0 w-100 align-content-center position-absolute divButoes">
+                            <button class="bi bi-zoom-in text-white h-100 p-0 border-0 butoesImagem btnExpandir"
                                 id="btnExpandir<?= $linhaTabela["idAnexo"] ?>" style="width: 50%; font-size: 190%;"
-                                onmouseover="expandirImagemFundo(this)" onmouseleave="retrairImagemFundo(this)"
                                 data-bs-toggle="modal" data-bs-target="#<?= $linhaTabela['nomeAnexo']; ?>"></button>
-                            <button
-                                class="bi bi-upload text-white h-100 p-0 border-0 visually-hidden butoesImagem btnUpload"
+                            <button class="bi bi-upload text-white h-100 p-0 border-0 butoesImagem btnUpload"
                                 id="btnUpload<?= $i; ?>" onclick="acionarInputArquivo(<?= $linhaTabela["idAnexo"] ?>)"
                                 style="width: 50%; font-size: 190%;"></button>
                             <input class="visually-hidden uploadEscondido"

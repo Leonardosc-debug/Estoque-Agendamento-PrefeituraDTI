@@ -214,5 +214,4 @@ function alterarArquivo(array $idsAnexosAlterados)
 
 // Execução de funções
 obterDadosFormData($conn);
-// Fechar a conexão ao banco de dados
-$conn->close();
+$conn->close(); // Fechar a conexão ao banco de dados

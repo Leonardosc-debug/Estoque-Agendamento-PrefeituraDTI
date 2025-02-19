@@ -1,4 +1,5 @@
 <?php
+// Declaração das variaveís que armazenam a conexão
 const SERVIDOR = "localhost";
 const USUARIO = "root";
 const SENHA = "";
