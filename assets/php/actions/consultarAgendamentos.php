@@ -1,5 +1,5 @@
 <?php 
-include '../../database/conexao.php';
+require '../../database/conexao.php';
 
 $conteudoFiltro = mysqli_real_escape_string($conn, $_POST["conteudoFiltro"]);
 $tipoFiltro = mysqli_real_escape_string($conn, $_POST["tipoFiltro"]);
