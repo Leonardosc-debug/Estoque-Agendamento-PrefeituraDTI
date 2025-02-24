@@ -86,7 +86,7 @@ $iconeStatus = null;
     </header>
 
     <main>
-        <div class="container" style="margin-top: 5rem;">
+        <div class="container">
             <!-- Identificador do agendamento -->
             <div class="row">
                 <h1
@@ -164,7 +164,7 @@ $iconeStatus = null;
     </main>
 
     <!-- Seção dos anexos, inclui a foto e a descrição -->
-    <footer class="mt-5 bg-black shadow-lg">
+    <footer class="bg-black shadow-lg" style="margin-top: 80px;">
         <?php
         if ($resultadoConsultaAnexo->num_rows === 0) { //Condição que se não possuir registro no banco dos anexos ele cria uma parte informando por texto que não possui anexos neste agendamento, mas se possuir ele faz toda a criação das colunas com anexo de imagem e texto.
         ?>
