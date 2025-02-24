@@ -10,16 +10,7 @@ const tooltipList = [...$tooltipTriggerList].map(
   (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
 );
 
-$(".divButoes").on("mouseover mouseleave", function (evento) {
-  $(this).toggleClass("opacity-0", evento.type === "mouseleave");
-});
-
-$(".btnExpandir").on("mouseover mouseleave", function (evento) {
-  const idInstancia = this.id.substring(11);
-  const $imagemDoAnexo = $("#imgFundo" + idInstancia);
-  $imagemDoAnexo.css("transform", evento.type === "mouseover" ? "scale(1.5)" : "scale(1)");
-});
-
+//Funções principais
 function renderizarOpcoesMarcadas() {
   const tipoAgendamento = $("div[data-tiposalvo]").attr("data-tiposalvo");
   const statusAgendamento = $("div[data-statussalvo]").attr("data-statussalvo");
@@ -84,16 +75,24 @@ function carregarTextosAnexos(textoAnexoInstancia) {
   textosComIdAnexosAlteradosPendentes[id] = textoInstancia;
 }
 
-function prepararFormdata() {
+function prepararFormdata(valoresCarregadosNaPagina) {
   const formData = new FormData();
 
   // Campos Tabela Agendamento
+  const valoresAtual = {
+    dataAgendamento: $("#dataAgendamento").val(),
+    tipoAgendamento: $("input[name='tipoAgendamento']").val(),
+    conteudoAgendamento: $("#conteudoAgendamento").val(),
+    envolvidosAgendamento: $("#envolvidosAgendamento").val(),
+    statusAgendamento: $("#selectStatus").val(),
+  };
+  // Adicionará apenas os valores que foram alterados
+  for (let campo in valoresAtual) {
+    if (valoresAtual[campo] !== valoresCarregadosNaPagina[campo]) {
+      formData.set(campo, valoresAtual[campo]);
+    }
+  }
   formData.set("idAgendamento", idAgendamento);
-  formData.set("dataAgendamento", $("#dataAgendamento").val());
-  formData.set("tipoAgendamento", $("input[name='tipoAgendamento']").val());
-  formData.set("conteudoAgendamento", $("#conteudoAgendamento").val());
-  formData.set("envolvidosAgendamento", $("#envolvidosAgendamento").val());
-  formData.set("statusAgendamento", $("#selectStatus").val());
 
   // Campos Tabela Anexos
   // Adiciona as chaves (IDs) separadamente no FormData
@@ -119,9 +118,7 @@ function prepararFormdata() {
   return formData;
 }
 
-async function salvarEdicao() {
-  const formData = prepararFormdata();
-
+async function salvarEdicao(formData) {
   // Envia os dados do FormData para o PHP para salvar as alterações no banco de dados.
   try {
     const respostaJson = await $.ajax({
@@ -174,8 +171,27 @@ async function deletarAgendendamento() {
   }
 }
 
+// Event Listeners
+$(".divButoes").on("mouseover mouseleave", function (evento) {
+  $(this).toggleClass("opacity-0", evento.type === "mouseleave");
+});
+
+$(".btnExpandir").on("mouseover mouseleave", function (evento) {
+  const idInstancia = this.id.substring(11);
+  const $imagemDoAnexo = $("#imgFundo" + idInstancia);
+  $imagemDoAnexo.css("transform", evento.type === "mouseover" ? "scale(1.5)" : "scale(1)");
+});
+
 $(document).ready(function () {
   renderizarOpcoesMarcadas();
+
+  const valoresCarregadosNaPagina = {
+    dataAgendamento: $("#dataAgendamento").val(),
+    tipoAgendamento: $("input[name='tipoAgendamento']").val(),
+    conteudoAgendamento: $("#conteudoAgendamento").val(),
+    envolvidosAgendamento: $("#envolvidosAgendamento").val(),
+    statusAgendamento: $("#selectStatus").val(),
+  };
 
   $(".uploadEscondido").change(function () {
     carregarArquivo(this);
@@ -186,5 +202,8 @@ $(document).ready(function () {
   });
 
   $("button#submitDelete").click(deletarAgendendamento);
-  $("button#submit").click(salvarEdicao);
+  $("button#submit").click(function () {
+    const formData = prepararFormdata(valoresCarregadosNaPagina);
+    salvarEdicao(formData);
+  });
 });
