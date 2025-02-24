@@ -8,6 +8,10 @@
   font-family: "Montserrat", sans-serif;
 }
 
+header:has(nav) {
+  margin-bottom: 80px;
+}
+
 .navbar-brand img {
   margin-left: 20px;
 }
