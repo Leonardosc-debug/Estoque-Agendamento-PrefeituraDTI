@@ -60,8 +60,7 @@
                     <div class="row">
                         <div class="col form-floating">
                             <input class="form-control shadow-sm" type="search" id="inputConteudo" placeholder="">
-                            <label for="inputConteudo" style="margin-left: 9px;">Pesquisar por conteúdo ou só o
-                                ID</label>
+                            <label for="inputConteudo" style="margin-left: 9px;">Pesquisar por conteúdo ou ID</label>
                         </div>
                     </div>
                     <div class="row mt-3">
@@ -93,18 +92,22 @@
                             <div class="input-group shadow-sm">
                                 <span class="input-group-text bg-black" for="inputData"><i
                                         class="bi bi-calendar-range text-white"></i></span>
-                                <input class="form-control" type="date" id="inputData" onchange="liberarDateAte(this)">
+                                <input class="form-control" type="date" id="inputData" title="Define o período inicial do filtro ou o dia exato" onchange="liberarDateAte(this)">
                             </div>
                         </div>
                         <div class="col-6 col-sm-4">
                             <div class="input-group shadow-sm">
                                 <span class="input-group-text bg-black" for="inputData"><i
                                         class="bi bi-calendar-range-fill text-white"></i></span>
-                                <input class="form-control" type="date" id="inputDataAte" disabled>
+                                <input class="form-control" type="date" id="inputDataAte" title="Define o período final do filtro" disabled>
                             </div>
                         </div>
                     </div>
-                    <div class="row mt-4 justify-content-end gap-2">
+                    <p class="opacity-75 mt-1 mb-0 fst-italic justificar-texto" style="font-size: 9px; width: 66%;">
+                        *O primeiro botão de seleção de data define o dia exato do agendamento ou
+                        marca o início do período de agendamentos.
+                    </p>
+                    <div class="row justify-content-end gap-2">
                         <a href="./agendar.php" class="col-4 col-lg-2 btn btn-warning" style="width: 40px;">
                             <i class="bi bi-calendar2-plus-fill"></i>
                         </a>
@@ -135,6 +138,7 @@
                             <th scope="col">Conteúdo</th>
                             <th scope="col">Envolvidos</th>
                             <th scope="col">Item do Estoque</th>
+                            <th scope="col"></th>
                         </tr>
                         </tr>
                     </thead>
