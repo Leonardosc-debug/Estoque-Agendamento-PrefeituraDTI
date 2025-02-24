@@ -64,15 +64,16 @@ $conn -> close();
                             <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">Agendamentos</a>
                             <ul class="dropdown-menu dropdown-menu-dark w-25">
-                                <li><a class="dropdown-item" href="./agendamentos.php"><i class="bi bi-card-list"></i>
+                                <li><a class="dropdown-item" href="../agendamentos/listarAgendamentos.php"><i
+                                            class="bi bi-card-list"></i>
                                         Listar</a></li>
-                                <li><a class="dropdown-item" href="./agendar.php"><i
+                                <li><a class="dropdown-item" href="../agendamentos/agendar.php"><i
                                             class="bi bi-calendar2-plus-fill"></i>
                                         Agendar</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="estoque.php">Estoque</a>
+                            <a class="nav-link" href="../estoque/estoque.php">Estoque</a>
                         </li>
                     </ul>
                 </div>
@@ -82,7 +83,7 @@ $conn -> close();
 
     <main>
         <!-- Formulário para agendamento -->
-        <div class="container" style="margin-top: 5rem;">
+        <div class="container">
             <h1 class="text-white text-center" style="-webkit-text-fill-color: transparent; -webkit-text-stroke: 1px;">
                 EDITAR</h1>
             <form class="row justify-content-center">
