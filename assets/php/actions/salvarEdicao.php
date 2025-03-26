@@ -7,8 +7,8 @@ function obterDadosFormData(mysqli $conn)
 {
     $camposTabelaAgendamento = [
         "dataAgendamento", "tipoAgendamento", 
-        "conteudoAgendamento", "conteudoAgendamento", 
-        "envolvidosAgendamento", "statusAgendamento"
+        "conteudoAgendamento", "envolvidosAgendamento", 
+        "statusAgendamento"
     ];
     $camposTabelaAnexo = [
         "textosAnexosAlterados", "idsTextosAlterados",
@@ -162,7 +162,6 @@ function construirSqlTextosAnexos(array $dadosObtidos)
     return null;
 }
 
-// EM CONSTRUÇÃO, IMPLEMENTAR A TROCA DOS ARQUIVOS BASEADO NO ID DO ANEXO
 function alterarArquivo(mysqli $conn, int $idAgendamento, array $idsAnexosAlterados)
 {
     $contadorArquivosEditadosComSucesso = 0;
