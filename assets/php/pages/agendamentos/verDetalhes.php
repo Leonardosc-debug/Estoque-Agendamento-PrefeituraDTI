@@ -205,11 +205,11 @@ $iconeStatus = null;
                             $inputAnexoImagem = null;
                             $pAnexoTexto = null;
                             if ($linhaTabela['textoAnexo'] === "") {
-                                $divEnxaixeAnexoImagem = '<div class="w-100 h-100 overflow-hidden">';
-                                $inputAnexoImagem = '<input class="w-100 h-100 rounded-top-3 rounded-bottom-3 overflow-hidden thumbAnexo" type="image" onmouseover="expandirImagemFundo(this)" onmouseleave="retrairImagemFundo(this)" data-bs-toggle="modal" data-bs-target="#' . $linhaTabela['nomeAnexo'] . '" src="../../../database/storage/arquivosAnexos/' . $linhaTabela['nomeAnexo'] . '" alt="">';
+                                $divEnxaixeAnexoImagem = '<div class="w-100 h-100 rounded-top-3 rounded-bottom-3 overflow-hidden">';
+                                $inputAnexoImagem = '<input class="w-100 h-100 overflow-hidden thumbAnexo" type="image" onmouseover="expandirImagemFundo(this)" onmouseleave="retrairImagemFundo(this)" data-bs-toggle="modal" data-bs-target="#' . $linhaTabela['nomeAnexo'] . '" src="../../../database/storage/arquivosAnexos/' . $linhaTabela['nomeAnexo'] . '" alt="">';
                             } else {
-                                $divEnxaixeAnexoImagem = '<div class="w-100 h-50 border-bottom border-2 overflow-hidden">';
-                                $inputAnexoImagem = '<input class="w-100 h-100 rounded-top-3 overflow-hidden thumbAnexo" type="image" onmouseover="expandirImagemFundo(this)" onmouseleave="retrairImagemFundo(this)" data-bs-toggle="modal" data-bs-target="#' . $linhaTabela['nomeAnexo'] . '" src="../../../database/storage/arquivosAnexos/' . $linhaTabela['nomeAnexo'] . '" alt="">';
+                                $divEnxaixeAnexoImagem = '<div class="w-100 h-50 rounded-top-3 border-bottom border-2 overflow-hidden">';
+                                $inputAnexoImagem = '<input class="w-100 h-100 overflow-hidden thumbAnexo" type="image" onmouseover="expandirImagemFundo(this)" onmouseleave="retrairImagemFundo(this)" data-bs-toggle="modal" data-bs-target="#' . $linhaTabela['nomeAnexo'] . '" src="../../../database/storage/arquivosAnexos/' . $linhaTabela['nomeAnexo'] . '" alt="">';
                                 $pAnexoTexto = '<p class="ms-1 text-white overflow-y-scroll justificar-texto scrollPersonalizado" style="max-height: 47%;">' . $linhaTabela['textoAnexo'] . '</p>';
                             };
 
@@ -234,9 +234,11 @@ $iconeStatus = null;
     ?>
     <!-- Modal do anexo -->
     <div class="modal fade" id="<?= $linhaTabela['nomeAnexo']; ?>" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered justify-content-center">
-            <img class="" style="object-fit: contain; height: 90vh; width: 90vw;"
-                src="../../../database/storage/arquivosAnexos/<?= $linhaTabela['nomeAnexo']; ?>" alt="">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-body">
+                <img class="w-100 object-fit-contain" style="height: 80vh;"
+                    src="../../../database/storage/arquivosAnexos/<?= $linhaTabela['nomeAnexo']; ?>" alt="">
+            </div>
         </div>
     </div>
     <?php
