@@ -204,9 +204,10 @@ $conn -> close();
                 style="--bs-btn-padding-y: .50rem; --bs-btn-padding-x: .9rem;" id="submitDelete"
                 data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Apagar agendamento."><i
                     class="bi bi-x-lg"></i></but>
-                <button class="btn btn-lg rounded-circle btn-success mb-3"
-                    style="--bs-btn-padding-y: .50rem; --bs-btn-padding-x: .9rem;" id="submit" data-bs-toggle="tooltip"
-                    data-bs-placement="top" data-bs-title="Salvar"><i class="bi bi-floppy-fill"></i></button>
+                <button class="btn btn-lg rounded-circle btn-success mb-3" id="submit"
+                    style="--bs-btn-padding-y: .50rem; --bs-btn-padding-x: .9rem;" type="submit"
+                    data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Salvar"><i
+                        class="bi bi-floppy-fill"></i></button>
         </div>
     </div>
 
