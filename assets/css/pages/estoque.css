@@ -1,0 +1,29 @@
+#linhaHorizontal {
+  height: 20px;
+  color: black;
+}
+
+.form-floating > label::after {
+  background-color: transparent !important;
+}
+
+.botoesSliders {
+  transition: background-color 0.2s ease-in-out; /* Transição de cor e borda */
+  transform: translate(0px, 50px);
+  width: 50px !important;
+  height: 70px !important;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 0;
+}
+
+.botoesSliders:hover {
+  background-color: rgba(63, 63, 63, 0.6);
+}
+
+.botoesSliders:active {
+  border: 1.8px solid white; /* Torna a borda branca quando ativo */
+}
+
+.trasicaoCarossel {
+  transition: transform 0.4s ease-in-out;
+}

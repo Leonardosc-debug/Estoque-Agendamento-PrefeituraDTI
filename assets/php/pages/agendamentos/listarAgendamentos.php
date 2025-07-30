@@ -44,7 +44,7 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="estoque.php">Estoque</a>
+                            <a class="nav-link" href="../estoque/estoque.php">Estoque</a>
                         </li>
                     </ul>
                 </div>
@@ -92,14 +92,17 @@
                             <div class="input-group shadow-sm">
                                 <span class="input-group-text bg-black" for="inputData"><i
                                         class="bi bi-calendar-range text-white"></i></span>
-                                <input class="form-control" type="date" id="inputData" title="Define o período inicial do filtro ou o dia exato" onchange="liberarDateAte(this)">
+                                <input class="form-control" type="date" id="inputData"
+                                    title="Define o período inicial do filtro ou o dia exato"
+                                    onchange="liberarDateAte(this)">
                             </div>
                         </div>
                         <div class="col-6 col-sm-4">
                             <div class="input-group shadow-sm">
                                 <span class="input-group-text bg-black" for="inputData"><i
                                         class="bi bi-calendar-range-fill text-white"></i></span>
-                                <input class="form-control" type="date" id="inputDataAte" title="Define o período final do filtro" disabled>
+                                <input class="form-control" type="date" id="inputDataAte"
+                                    title="Define o período final do filtro" disabled>
                             </div>
                         </div>
                     </div>

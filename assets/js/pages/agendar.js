@@ -58,10 +58,12 @@ function validarArquivo(input) {
 
     if (erro) {
       $(input).siblings("p").remove(); // Remove o aviso anterior
-      $(input).after($mensagemErro);
-      $(input).val(""); // Limpa o input
-      $(input).addClass("is-invalid");
-      $(input).siblings("textarea").prop("disabled", true);
+      $(input)
+        .after($mensagemErro)
+        .val("") // Limpa o input
+        .addClass("is-invalid")
+        .siblings("textarea")
+        .prop("disabled", true);
 
       const $proximosInputs = $('[name="anexoArquivo"]').slice(indexAtual + 1);
 
